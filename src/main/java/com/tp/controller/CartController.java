@@ -55,7 +55,6 @@ public class CartController {
      */
     @PostMapping("/item")
     public Result<String> addToCart(@RequestBody CartItemDTO dto) {
-        Long userId = BaseContext.getCurrentUserId();
         Product product = productService.getById(dto.getProductId());
         CartItem item = CartItem.builder()
                 .cartId(dto.getCartId())

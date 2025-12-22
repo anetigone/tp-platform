@@ -120,8 +120,8 @@ public interface CommentMapper {
     /**
      * 根据商品ID分页查询评论列表
      * @param id 商品ID
-     * @param page 页码
-     * @param size 页大小
+     * @param offset 页码
+     * @param limit 页大小
      * @return 评论列表
      */
     List<Comment> getPageByProductId(Long id, Integer offset, Integer limit);
