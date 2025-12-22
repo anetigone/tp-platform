@@ -6,6 +6,7 @@ public class ExceptionMessage {
     public static final String USERNAME_DUPLICATE = "用户名已存在";
     public static final String PASSWORD_MISMATCH = "密码错误";
     public static final String USER_FORBIDDEN = "用户被封禁";
+    public static final String USER_BALANCE_NOT_ENOUGH = "用户余额不足";
 
     // Cart related exceptions
     public static final String CART_NOT_FOUND = "购物车不存在";
@@ -63,5 +64,4 @@ public class ExceptionMessage {
     public static final String ADDRESS_ID_NULL = "地址ID不能为空";
     public static final String ADDRESS_USER_ID_NULL = "用户ID不能为空";
     public static final String NO_DEFAULT_ADDRESS = "不存在默认地址";
-
 }

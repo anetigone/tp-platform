@@ -1,5 +1,6 @@
 package com.tp.service.impl;
 
+import com.tp.common.dto.CommentDTO;
 import com.tp.common.entity.Comment;
 import com.tp.common.exception.CommentException;
 import com.tp.common.exception.ExceptionMessage;
@@ -172,7 +173,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public boolean createProductComment(Long userId, Long orderId, Long productId, String content, Integer star) {
+    public Long createProductComment(CommentDTO dto) {
+        Long userId = dto.getUserId();
+        Long orderId = dto.getOrderId();
+        Long productId = dto.getProductId();
+        String content = dto.getContent();
+        Integer star = dto.getStar();
+
         if (userId == null || orderId == null || productId == null) {
             throw new CommentException(ExceptionMessage.COMMENT_USER_ID_NULL);
         }
@@ -199,7 +206,9 @@ public class CommentServiceImpl implements CommentService {
         comment.setCreateTime(LocalDateTime.now());
         comment.setUpdateTime(LocalDateTime.now());
 
-        return commentMapper.insert(comment) > 0;
+        commentMapper.insert(comment);
+
+        return comment.getId();
     }
 
     @Override
@@ -261,5 +270,17 @@ public class CommentServiceImpl implements CommentService {
         // 合并并返回
         oneStarComments.addAll(twoStarComments);
         return oneStarComments;
+    }
+
+    @Override
+    public List<Comment> getPageByProductId(Long id, Integer page, Integer size) {
+        int offset = (page - 1) * size;
+        int limit = size;
+        return commentMapper.getPageByProductId(id, offset, limit);
+    }
+
+    @Override
+    public Integer countByProductId(Long id) {
+        return commentMapper.countByProductId(id);
     }
 }

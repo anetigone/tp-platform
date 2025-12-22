@@ -101,15 +101,10 @@ public interface OrderItemService {
 
     /**
      * 创建订单项
-     * @param orderId 订单ID
-     * @param productId 商品ID
-     * @param productName 商品名称
-     * @param productImage 商品图片
-     * @param unitPrice 单价
-     * @param quantity 数量
-     * @return 订单项信息
+     * @param item 订单项信息
+     * @return 创建后的订单项id
      */
-    OrderItem createOrderItem(Long orderId, Long productId, String productName, String productImage, BigDecimal unitPrice, Integer quantity);
+    Long createOrderItem(OrderItem item);
 
     /**
      * 为订单创建多个订单项

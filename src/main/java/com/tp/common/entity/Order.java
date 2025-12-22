@@ -1,5 +1,6 @@
 package com.tp.common.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serial;
@@ -8,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class Order implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -25,7 +27,6 @@ public class Order implements Serializable {
     private Integer status;
     // 0:余额支付,1:微信支付,2:支付宝支付
     private Integer payMethod;
-
 
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

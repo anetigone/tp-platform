@@ -1,24 +1,38 @@
 package com.tp.service.impl;
 
-import com.tp.common.entity.Order;
+import com.tp.common.context.BaseContext;
+import com.tp.common.dto.OrderDTO;
+import com.tp.common.entity.*;
 import com.tp.common.exception.ExceptionMessage;
 import com.tp.common.exception.OrderException;
-import com.tp.mapper.OrderMapper;
+import com.tp.mapper.*;
 import com.tp.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private CartItemMapper cartItemMapper;
+    @Autowired
+    private OrderItemMapper orderItemMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private CartMapper cartMapper;
 
     @Override
     public boolean insert(Order order) {
@@ -189,29 +203,49 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order createOrder(Long sellerId, Long buyerId, Long addressId, BigDecimal amount, BigDecimal discount, String remark) {
-        if (sellerId == null || buyerId == null) {
-            throw new OrderException(ExceptionMessage.ORDER_USER_ID_NULL);
-        }
+    public Long createOrder(OrderDTO dto) {
+        Long sellerId = dto.getSellerId();
+        Long buyerId = dto.getBuyerId();
+        Long addressId = dto.getAddressId();
+        BigDecimal amount = dto.getAmount();
+        BigDecimal discount = dto.getDiscount();
+        String remark = dto.getRemark();
+        List<Long> itemIds = dto.getCartItemIds();
 
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+        if(amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new OrderException(ExceptionMessage.ORDER_TOTAL_AMOUNT_INVALID);
         }
 
-        Order order = new Order();
-        order.setSellerId(sellerId);
-        order.setBuyerId(buyerId);
-        order.setAddressId(addressId);
-        order.setAmount(amount);
-        order.setDiscount(discount != null ? discount : BigDecimal.ZERO);
-        order.setRemark(remark);
-        order.setOrderNo(generateOrderNo());
-        order.setStatus(0); // 待付款
-        order.setCreateTime(LocalDateTime.now());
-        order.setUpdateTime(LocalDateTime.now());
-
+        String orderNo = generateOrderNo();
+        Order order = Order.builder()
+                .sellerId(sellerId)
+                .buyerId(buyerId)
+                .addressId(addressId)
+                .amount(amount)
+                .remark(remark)
+                .discount(discount)
+                .updateTime(LocalDateTime.now())
+                .createTime(LocalDateTime.now())
+                .orderNo(orderNo)
+                .build();
         orderMapper.insert(order);
-        return order;
+
+        List<CartItem> items = cartItemMapper.getBatchIds(itemIds);
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (CartItem item : items) {
+            OrderItem orderItem = OrderItem.builder()
+                    .orderId(order.getId())
+                    .productId(item.getProductId())
+                    .productName(item.getProductName())
+                    .productImage(item.getProductImage())
+                    .unitPrice(item.getUnit())
+                    .quantity(item.getQuantity())
+                    .totalPrice(item.getUnit().multiply(new BigDecimal(item.getQuantity())))
+                    .build();
+            orderItems.add(orderItem);
+        }
+        orderItemMapper.batchInsert(orderItems);
+        return order.getId();
     }
 
     @Override
@@ -235,8 +269,49 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
 
-        // 再更新订单状态为待发货
-        return orderMapper.updateStatus(id, 1) > 0;
+        switch (payMethod) {
+            case 0:
+            {
+                Long userId = BaseContext.getCurrentUserId();
+                User user = userMapper.getById(userId);
+                if (user.getBalance().compareTo(order.getAmount()) < 0) {
+                    throw new OrderException(ExceptionMessage.USER_BALANCE_NOT_ENOUGH);
+                }
+                user.setBalance(user.getBalance().subtract(order.getAmount()));
+                userMapper.updateById(user);
+                break;
+            }
+            case 1:
+            {
+                Long userId = BaseContext.getCurrentUserId();
+                log.info("用户 {} 使用微信支付订单 {}", userId, id);
+                break;
+            }
+            case 2:
+            {
+                Long userId = BaseContext.getCurrentUserId();
+                log.info("用户 {} 使用支付宝支付订单 {}", userId, id);
+                break;
+            }
+            default:
+                throw new OrderException(ExceptionMessage.ORDER_PAYMENT_METHOD_INVALID);
+        }
+        boolean result = orderMapper.updateStatus(id, 1) > 0;
+        if(result) {
+            log.info("订单 {} 已支付", id);
+            List<OrderItem> orderItems = orderItemMapper.getByOrderId(id);
+            Long userId = BaseContext.getCurrentUserId();
+            Cart cart = cartMapper.getByUserId(userId);
+            Long cartId = cart.getId();
+            List<Long> cartItemIds = new ArrayList<>();
+            for(OrderItem orderItem : orderItems) {
+                CartItem cartItem = cartItemMapper.getByCartIdAndProductId(cartId, orderItem.getProductId());
+                cartItemIds.add(cartItem.getId());
+            }
+            cartItemMapper.deleteBatchIds(cartItemIds);
+        }
+
+        return result;
     }
 
     @Override
@@ -276,25 +351,24 @@ public class OrderServiceImpl implements OrderService {
      * @return 是否合法
      */
     private boolean isValidStatusTransition(Integer currentStatus, Integer newStatus) {
-        switch (currentStatus) {
-            case 0: // 待付款
-                return newStatus == 1 || newStatus == 4 || newStatus == 7; // 待发货、已取消、交易关闭
-            case 1: // 待发货
-                return newStatus == 2 || newStatus == 5 || newStatus == 7; // 待收货、退款中、交易关闭
-            case 2: // 待收货
-                return newStatus == 3 || newStatus == 5; // 已完成、退款中
-            case 3: // 已完成
-                return newStatus == 5; // 退款中
-            case 4: // 已取消
-                return false; // 已取消不能改变状态
-            case 5: // 退款中
-                return newStatus == 6 || newStatus == 7; // 已退款、交易关闭
-            case 6: // 已退款
-                return false; // 已退款不能改变状态
-            case 7: // 交易关闭
-                return false; // 交易关闭不能改变状态
-            default:
-                return false;
-        }
+        return switch (currentStatus) {
+            case 0 -> // 待付款
+                    newStatus == 1 || newStatus == 4 || newStatus == 7; // 待发货、已取消、交易关闭
+            case 1 -> // 待发货
+                    newStatus == 2 || newStatus == 5 || newStatus == 7; // 待收货、退款中、交易关闭
+            case 2 -> // 待收货
+                    newStatus == 3 || newStatus == 5; // 已完成、退款中
+            case 3 -> // 已完成
+                    newStatus == 5; // 退款中
+            case 4 -> // 已取消
+                    false; // 已取消不能改变状态
+            case 5 -> // 退款中
+                    newStatus == 6 || newStatus == 7; // 已退款、交易关闭
+            case 6 -> // 已退款
+                    false; // 已退款不能改变状态
+            case 7 -> // 交易关闭
+                    false; // 交易关闭不能改变状态
+            default -> false;
+        };
     }
 }

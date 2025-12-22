@@ -1,5 +1,6 @@
 package com.tp.service;
 
+import com.tp.common.dto.OrderDTO;
 import com.tp.common.entity.Order;
 
 import java.math.BigDecimal;
@@ -95,15 +96,10 @@ public interface OrderService {
 
     /**
      * 创建订单
-     * @param sellerId 卖家ID
-     * @param buyerId 买家ID
-     * @param addressId 收货地址ID
-     * @param amount 订单金额
-     * @param discount 折扣金额
-     * @param remark 备注
-     * @return 订单信息
+     * @param dto 订单信息
+     * @return 订单id
      */
-    Order createOrder(Long sellerId, Long buyerId, Long addressId, BigDecimal amount, BigDecimal discount, String remark);
+    Long createOrder(OrderDTO dto);
 
     /**
      * 取消订单

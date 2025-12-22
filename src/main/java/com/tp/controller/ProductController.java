@@ -51,6 +51,7 @@ public class ProductController {
 
     /**
      * 分页查询商品
+     * //todo 按条件查询
      * @return 商品列表
      */
     @GetMapping("/list")

@@ -164,4 +164,12 @@
         limit 1
     </select>
 
+    <select id="getPageByProductId" resultMap="CommentResultMap">
+        select id, user_id, order_id, product_id, content, star, create_time, update_time
+        from comment
+        where product_id = #{productId}
+        order by create_time desc
+        limit #{offset}, #{limit}
+    </select>
+
 </mapper>

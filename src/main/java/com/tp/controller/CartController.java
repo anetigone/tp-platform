@@ -48,6 +48,11 @@ public class CartController {
         return Result.success(vo);
     }
 
+    /**
+     * 添加商品到购物车
+     * @param dto 商品信息
+     * @return 操作结果
+     */
     @PostMapping("/item")
     public Result<String> addToCart(@RequestBody CartItemDTO dto) {
         Long userId = BaseContext.getCurrentUserId();
@@ -65,8 +70,26 @@ public class CartController {
         return Result.success();
     }
 
+    /**
+     * 更新购物车项
+     * @param id 购物车项ID
+     * @param quantity 数量
+     * @return 操作结果
+     */
+    @PostMapping("/item/update")
+    public Result<String> updateCartItem(@RequestParam("id") Long id, @RequestParam("quantity") Integer quantity) {
+        cartItemService.updateQuantity(id, quantity);
+
+        return Result.success();
+    }
+
+    /**
+     * 删除购物车项
+     * @param id 购物车项ID
+     * @return 操作结果
+     */
     @PostMapping("/item/delete/{id}")
-    public Result<String> removeFromCart(@PathVariable("id") Long id) {
+    public Result<String> deleteById(@PathVariable("id") Long id) {
         cartItemService.deleteById(id);
         return Result.success();
     }

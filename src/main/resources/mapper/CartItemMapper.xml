@@ -21,12 +21,11 @@
         values (#{cartId}, #{productId}, #{productName}, #{productImage}, #{quantity}, #{unit}, #{createTime}, #{updateTime})
     </insert>
 
-    <!-- 根据ID删除购物车项（逻辑删除） -->
-    <update id="deleteById">
-        update cart_item
-        set quantity = 0, update_time = now()
+    <!-- 根据ID删除购物车项 -->
+    <delete id="deleteById">
+        delete from cart_item
         where id = #{id}
-    </update>
+    </delete>
 
     <!-- 根据购物车ID批量删除购物车项 -->
     <update id="deleteByCartId">
@@ -129,5 +128,13 @@
         and quantity > 0
         limit 1
     </select>
+
+    <delete id="deleteBatchIds">
+        delete from cart_item
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 
 </mapper>

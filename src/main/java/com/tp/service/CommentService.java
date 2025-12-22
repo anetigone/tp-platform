@@ -1,5 +1,6 @@
 package com.tp.service;
 
+import com.tp.common.dto.CommentDTO;
 import com.tp.common.entity.Comment;
 
 import java.util.List;
@@ -87,14 +88,10 @@ public interface CommentService {
 
     /**
      * 创建商品评论
-     * @param userId 用户ID
-     * @param orderId 订单ID
-     * @param productId 商品ID
-     * @param content 评论内容
-     * @param star 星级（1-5）
-     * @return 操作结果
+     * @param dto 评论信息
+     * @return 评论id
      */
-    boolean createProductComment(Long userId, Long orderId, Long productId, String content, Integer star);
+    Long createProductComment(CommentDTO dto);
 
     /**
      * 检查用户是否已评论该商品
@@ -139,4 +136,21 @@ public interface CommentService {
      * @return 评论列表
      */
     List<Comment> getLowStarComments(Long productId);
+
+    /**
+     * 分页查询商品评论
+     * @param id 商品ID
+     * @param page 页码
+     * @param size 页大小
+     * @return 评论列表
+     */
+    List<Comment> getPageByProductId(Long id, Integer page, Integer size);
+
+    /**
+     * 统计商品的评论数量
+     *
+     * @param id 商品ID
+     * @return 评论数量
+     */
+    Integer countByProductId(Long id);
 }

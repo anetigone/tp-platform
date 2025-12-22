@@ -1,5 +1,6 @@
 package com.tp.common.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serial;
@@ -8,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class OrderItem implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

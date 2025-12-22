@@ -80,4 +80,10 @@ public interface CartItemMapper {
      * @return 影响行数
      */
     int updateQuantity(@Param("id") Long id, @Param("quantity") Integer quantity);
+
+    /**
+     * 批量删除购物车项
+     * @param cartItemIds 购物车项ID列表
+     */
+    void deleteBatchIds(List<Long> cartItemIds);
 }

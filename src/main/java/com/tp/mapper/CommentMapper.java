@@ -116,4 +116,13 @@ public interface CommentMapper {
      * @return 影响行数
      */
     int deleteByOrderId(@Param("orderId") Long orderId);
+
+    /**
+     * 根据商品ID分页查询评论列表
+     * @param id 商品ID
+     * @param page 页码
+     * @param size 页大小
+     * @return 评论列表
+     */
+    List<Comment> getPageByProductId(Long id, Integer offset, Integer limit);
 }

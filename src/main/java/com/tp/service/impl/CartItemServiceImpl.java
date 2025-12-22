@@ -112,9 +112,21 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public boolean updateQuantity(Long id, Integer quantity) {
-        if (id == null || quantity == null || quantity <= 0) {
+        if (id == null || quantity == null) {
             throw new CartItemException(ExceptionMessage.CART_ITEM_QUANTITY_INVALID);
         }
+        CartItem cartItem = cartItemMapper.getById(id);
+        if (cartItem == null) {
+            throw new CartItemException(ExceptionMessage.CART_ITEM_NOT_FOUND);
+        }
+        if(quantity <= 0) {
+            return cartItemMapper.deleteById(id) > 0;
+        }
+        if(quantity + cartItem.getQuantity() > 1000) {
+            throw new CartItemException(ExceptionMessage.CART_ITEM_QUANTITY_INVALID);
+        }
+        cartItem.setQuantity(quantity);
+        cartItem.setUpdateTime(LocalDateTime.now());
 
         return cartItemMapper.updateQuantity(id, quantity) > 0;
     }

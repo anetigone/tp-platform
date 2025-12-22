@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -187,7 +188,13 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public OrderItem createOrderItem(Long orderId, Long productId, String productName, String productImage, BigDecimal unitPrice, Integer quantity) {
+    public Long createOrderItem(OrderItem item) {
+        Long orderId = item.getOrderId();
+        Long productId = item.getProductId();
+        String productName = item.getProductName();
+        String productImage = item.getProductImage();
+        BigDecimal unitPrice = item.getUnitPrice();
+        Integer quantity = item.getQuantity();
         if (orderId == null || productId == null) {
             throw new OrderItemException(ExceptionMessage.ORDER_ITEM_PRODUCT_ID_NULL);
         }
@@ -200,19 +207,20 @@ public class OrderItemServiceImpl implements OrderItemService {
             throw new OrderItemException(ExceptionMessage.ORDER_ITEM_QUANTITY_INVALID);
         }
 
-        OrderItem orderItem = new OrderItem();
-        orderItem.setOrderId(orderId);
-        orderItem.setProductId(productId);
-        orderItem.setProductName(productName);
-        orderItem.setProductImage(productImage);
-        orderItem.setUnitPrice(unitPrice);
-        orderItem.setQuantity(quantity);
-        orderItem.setTotalPrice(calculateTotalPrice(unitPrice, quantity));
-        orderItem.setCreateTime(LocalDateTime.now());
-        orderItem.setUpdateTime(LocalDateTime.now());
+        OrderItem orderItem = OrderItem.builder()
+                .orderId(orderId)
+                .productId(productId)
+                .productName(productName)
+                .productImage(productImage)
+                .unitPrice(unitPrice)
+                .quantity(quantity)
+                .totalPrice(calculateTotalPrice(unitPrice, quantity))
+                .createTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build();
 
         orderItemMapper.insert(orderItem);
-        return orderItem;
+        return orderItem.getId();
     }
 
     @Override
@@ -240,7 +248,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         }
 
         // 单价 * 数量，保留2位小数
-        return unitPrice.multiply(new BigDecimal(quantity)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return unitPrice.multiply(new BigDecimal(quantity)).setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override
