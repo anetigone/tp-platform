@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tp.common.entity.Address">
+    <select id="getById" resultType="com.tp.common.entity.Address">
+        select *
+        from address
+        where id = #{id}
+    </select>
+    
+    <select id="getByUserId" resultType="com.tp.common.entity.Address">
+        select *
+        from address
+        where user_id = #{userId}
+    </select>
+
+    <select id="getPageByUserID" resultType="com.tp.common.entity.Address">
+        select *
+        from address
+        where user_id = #{userId}
+        limit #{offset}, #{size}
+    </select>
+
+    <select id="count" resultType="java.lang.Long">
+        select count(*)
+        from address
+        where user_id = #{userId}
+    </select>
+    
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into address(user_id, province, city, street, detail, zip_code, is_default, status, create_time, update_time)
+        values(#{userId}, #{province}, #{city}, #{street}, #{detail}, #{zipCode}, #{isDefault}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+    
+    <update id="update">
+        update address
+        <set>
+            <if test="province != null">
+                province = #{province},
+            </if>
+            <if test="city != null">
+                city = #{city},
+            </if>
+            <if test="street != null">
+                street = #{street},
+            </if>
+            <if test="detail != null">
+                detail = #{detail},
+            </if>
+            <if test="zipCode != null">
+                zip_code = #{zipCode},
+            </if>
+            <if test="isDefault != null">
+                is_default = #{isDefault},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            update address
+            <set>
+                <if test="item.province != null">
+                    province = #{item.province},
+                </if>
+                <if test="item.city != null">
+                    city = #{item.city},
+                </if>
+                <if test="item.street != null">
+                    street = #{item.street},
+                </if>
+                <if test="item.detail != null">
+                    detail = #{item.detail},
+                </if>
+                <if test="item.zipCode != null">
+                    zip_code = #{item.zipCode},
+                </if>
+                <if test="item.isDefault != null">
+                    is_default = #{item.isDefault},
+                </if>
+                <if test="item.status != null">
+                    status = #{item.status},
+                </if>
+            </set>
+            where id = #{item.id}
+        </foreach>
+    </update>
+
+    <delete id="deleteById">
+        delete from address
+        where id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tp.mapper.ProductMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into product(seller_id, category_id, address_id, name, description, price, quantity, creat_time, update_time)
+        values (#{sellerId}, #{categoryId}, #{addressId}, #{name}, #{description}, #{price}, #{quantity}, #{creatTime}, #{updateTime})
+    </insert>
+
+    <select id="getById" resultType="com.tp.common.entity.Product">
+        select *
+        from product
+        where id = #{id}
+    </select>
+
+    <select id="getAll" resultType="com.tp.common.entity.Product">
+        select *
+        from product
+        order by creat_time desc
+    </select>
+
+    <select id="getPage" resultType="com.tp.common.entity.Product">
+        select *
+        from product
+        order by creat_time desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="getPageBySellerId" resultType="com.tp.common.entity.Product">
+        select *
+        from product
+        where seller_id = #{sellerId}
+        order by creat_time desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="countBySellerId" resultType="long">
+        select count(*)
+        from product
+        where seller_id = #{sellerId}
+    </select>
+
+    <select id="getBySellerId" resultType="com.tp.common.entity.Product">
+        select *
+        from product
+        where seller_id = #{sellerId}
+        order by creat_time desc
+    </select>
+
+    <select id="getByCategoryId" resultType="com.tp.common.entity.Product">
+        select *
+        from product
+        where category_id = #{categoryId}
+        order by creat_time desc
+    </select>
+
+    <select id="count" resultType="java.lang.Long">
+        select count(*)
+        from product
+    </select>
+
+    <update id="update">
+        update product
+        <set>
+            <if test="sellerId != null">seller_id = #{sellerId},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="addressId != null">address_id = #{addressId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            update_time = #{updateTime}
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateQuantity">
+        update product
+        set quantity = #{quantity},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from product where id = #{id}
+    </delete>
+
+</mapper>

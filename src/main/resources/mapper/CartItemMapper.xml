@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tp.mapper.CartItemMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="CartItemResultMap" type="com.tp.common.entity.CartItem">
+        <id column="id" property="id"/>
+        <result column="cart_id" property="cartId"/>
+        <result column="product_id" property="productId"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_image" property="productImage"/>
+        <result column="quantity" property="quantity"/>
+        <result column="unit" property="unit"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 新增购物车项 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into cart_item(cart_id, product_id, product_name, product_image, quantity, unit, create_time, update_time)
+        values (#{cartId}, #{productId}, #{productName}, #{productImage}, #{quantity}, #{unit}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 根据ID删除购物车项（逻辑删除） -->
+    <update id="deleteById">
+        update cart_item
+        set quantity = 0, update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 根据购物车ID批量删除购物车项 -->
+    <update id="deleteByCartId">
+        update cart_item
+        set quantity = 0, update_time = now()
+        where cart_id = #{cartId}
+    </update>
+
+    <!-- 条件更新购物车项（动态更新） -->
+    <update id="update">
+        update cart_item
+        <set>
+            <if test="cartId != null">
+                cart_id = #{cartId},
+            </if>
+            <if test="productId != null">
+                product_id = #{productId},
+            </if>
+            <if test="productName != null and productName != ''">
+                product_name = #{productName},
+            </if>
+            <if test="productImage != null and productImage != ''">
+                product_image = #{productImage},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity},
+            </if>
+            <if test="unit != null">
+                unit = #{unit},
+            </if>
+            update_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 更新购物车项数量 -->
+    <update id="updateQuantity">
+        update cart_item
+        set quantity = #{quantity}, update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 根据ID查询购物车项 -->
+    <select id="getById" resultMap="CartItemResultMap">
+        select id, cart_id, product_id, product_name, product_image, quantity, unit, create_time, update_time
+        from cart_item
+        where id = #{id}
+        and quantity > 0
+    </select>
+
+    <!-- 多条件查询购物车项列表 -->
+    <select id="getList" resultMap="CartItemResultMap">
+        select id, cart_id, product_id, product_name, product_image, quantity, unit, create_time, update_time
+        from cart_item
+        <where>
+            <if test="cartId != null">
+                and cart_id = #{cartId}
+            </if>
+            <if test="productId != null">
+                and product_id = #{productId}
+            </if>
+            <if test="productName != null and productName != ''">
+                and product_name like concat('%', #{productName}, '%')
+            </if>
+            <if test="quantity != null">
+                and quantity = #{quantity}
+            </if>
+            and quantity > 0
+        </where>
+        order by create_time desc
+    </select>
+
+    <!-- 根据ID批量查询购物车项 -->
+    <select id="getBatchIds" resultMap="CartItemResultMap">
+        select id, cart_id, product_id, product_name, product_image, quantity, unit, create_time, update_time
+        from cart_item
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and quantity > 0
+        order by create_time desc
+    </select>
+
+    <!-- 根据购物车ID查询购物车项列表 -->
+    <select id="getByCartId" resultMap="CartItemResultMap">
+        select id, cart_id, product_id, product_name, product_image, quantity, unit, create_time, update_time
+        from cart_item
+        where cart_id = #{cartId}
+        and quantity > 0
+        order by create_time desc
+    </select>
+
+    <!-- 根据购物车ID和商品ID查询购物车项 -->
+    <select id="getByCartIdAndProductId" resultMap="CartItemResultMap">
+        select id, cart_id, product_id, product_name, product_image, quantity, unit, create_time, update_time
+        from cart_item
+        where cart_id = #{cartId}
+        and product_id = #{productId}
+        and quantity > 0
+        limit 1
+    </select>
+
+</mapper>

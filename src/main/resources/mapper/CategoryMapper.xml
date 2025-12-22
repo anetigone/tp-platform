@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tp.mapper.CategoryMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into category(name, description, icon, status, sort, create_time, update_time)
+        values (#{name}, #{description}, #{icon}, #{status}, #{sort}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="getById" resultType="com.tp.common.entity.Category">
+        select *
+        from category
+        where id = #{id}
+    </select>
+
+    <select id="getAll" resultType="com.tp.common.entity.Category">
+        select *
+        from category
+        order by sort asc, create_time desc
+    </select>
+
+    <update id="update">
+        update category
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            update_time = #{updateTime}
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from category where id = #{id}
+    </delete>
+
+</mapper>

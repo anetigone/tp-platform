@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tp.mapper.CartMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="CartResultMap" type="com.tp.common.entity.Cart">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 新增购物车 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into cart(user_id, status, create_time, update_time)
+        values (#{userId}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 根据ID删除购物车（逻辑删除） -->
+    <update id="deleteById">
+        update cart
+        set status = 3, update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 条件更新购物车（动态更新） -->
+    <update id="update">
+        update cart
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            update_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据ID查询购物车 -->
+    <select id="getById" resultMap="CartResultMap">
+        select id, user_id, status, create_time, update_time
+        from cart
+        where id = #{id}
+    </select>
+
+    <!-- 多条件查询购物车列表 -->
+    <select id="getList" resultMap="CartResultMap">
+        select id, user_id, status, create_time, update_time
+        from cart
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            and status != 3
+        </where>
+        order by create_time desc
+    </select>
+
+    <!-- 根据ID批量查询购物车 -->
+    <select id="getBatchIds" resultMap="CartResultMap">
+        select id, user_id, status, create_time, update_time
+        from cart
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and status != 3
+        order by create_time desc
+    </select>
+
+    <!-- 根据用户ID查询购物车 -->
+    <select id="getByUserId" resultMap="CartResultMap">
+        select id, user_id, status, create_time, update_time
+        from cart
+        where user_id = #{userId}
+        and status != 3
+        order by create_time desc
+        limit 1
+    </select>
+
+</mapper>

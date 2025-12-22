@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tp.mapper.ProductImageMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into product_image(product_id, url, name, description)
+        values (#{productId}, #{url}, #{name}, #{description})
+    </insert>
+
+    <select id="getById" resultType="com.tp.common.entity.ProductImage">
+        select *
+        from product_image
+        where id = #{id}
+    </select>
+
+    <select id="getByProductId" resultType="com.tp.common.entity.ProductImage">
+        select *
+        from product_image
+        where product_id = #{productId}
+        order by id asc
+    </select>
+
+    <update id="update">
+        update product_image
+        <set>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="url != null">url = #{url},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from product_image where id = #{id}
+    </delete>
+
+    <delete id="deleteByProductId">
+        delete from product_image where product_id = #{productId}
+    </delete>
+
+</mapper>

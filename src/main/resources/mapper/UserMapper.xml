@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tp.mapper.UserMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into user(username, password, email, phone, status, credit, balance, create_time, update_time)
+        values (#{username}, #{password}, #{email}, #{phone}, #{status}, #{credit}, #{balance}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="getByUsername" resultType="com.tp.common.entity.User">
+        select *
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="getById" resultType="com.tp.common.entity.User">
+        select *
+        from user
+        where id = #{id}
+    </select>
+
+    <update id="updateById">
+        update user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getPage" resultType="com.tp.common.entity.User">
+        select *
+        from user order by id
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="count" resultType="long">
+        select count(*)
+        from user
+    </select>
+
+</mapper>

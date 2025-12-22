@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tp.mapper.OrderMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="OrderResultMap" type="com.tp.common.entity.Order">
+        <id column="id" property="id"/>
+        <result column="seller_id" property="sellerId"/>
+        <result column="buyer_id" property="buyerId"/>
+        <result column="address_id" property="addressId"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="remark" property="remark"/>
+        <result column="amount" property="amount"/>
+        <result column="discount" property="discount"/>
+        <result column="status" property="status"/>
+        <result column="pay_method" property="payMethod"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 新增订单 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into `order`(seller_id, buyer_id, address_id, order_no, remark, amount, discount, status, pay_method, create_time, update_time)
+        values (#{sellerId}, #{buyerId}, #{addressId}, #{orderNo}, #{remark}, #{amount}, #{discount}, #{status}, #{payMethod}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 根据ID删除订单（逻辑删除） -->
+    <update id="deleteById">
+        update `order`
+        set status = 7, update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 条件更新订单（动态更新） -->
+    <update id="update">
+        update `order`
+        <set>
+            <if test="sellerId != null">
+                seller_id = #{sellerId},
+            </if>
+            <if test="buyerId != null">
+                buyer_id = #{buyerId},
+            </if>
+            <if test="addressId != null">
+                address_id = #{addressId},
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                order_no = #{orderNo},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+            <if test="discount != null">
+                discount = #{discount},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="payMethod != null">
+                pay_method = #{payMethod},
+            </if>
+            update_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 更新订单状态 -->
+    <update id="updateStatus">
+        update `order`
+        set status = #{status}, update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 更新支付方式 -->
+    <update id="updatePayMethod">
+        update `order`
+        set pay_method = #{payMethod}, update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 根据ID查询订单 -->
+    <select id="getById" resultMap="OrderResultMap">
+        select id, seller_id, buyer_id, address_id, order_no, remark, amount, discount, status, pay_method, create_time, update_time
+        from `order`
+        where id = #{id}
+    </select>
+
+    <!-- 根据订单号查询订单 -->
+    <select id="getByOrderNo" resultMap="OrderResultMap">
+        select id, seller_id, buyer_id, address_id, order_no, remark, amount, discount, status, pay_method, create_time, update_time
+        from `order`
+        where order_no = #{orderNo}
+    </select>
+
+    <!-- 多条件查询订单列表 -->
+    <select id="getList" resultMap="OrderResultMap">
+        select id, seller_id, buyer_id, address_id, order_no, remark, amount, discount, status, pay_method, create_time, update_time
+        from `order`
+        <where>
+            <if test="sellerId != null">
+                and seller_id = #{sellerId}
+            </if>
+            <if test="buyerId != null">
+                and buyer_id = #{buyerId}
+            </if>
+            <if test="addressId != null">
+                and address_id = #{addressId}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                and order_no like concat('%', #{orderNo}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="payMethod != null">
+                and pay_method = #{payMethod}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!-- 根据ID批量查询订单 -->
+    <select id="getBatchIds" resultMap="OrderResultMap">
+        select id, seller_id, buyer_id, address_id, order_no, remark, amount, discount, status, pay_method, create_time, update_time
+        from `order`
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        order by create_time desc
+    </select>
+
+    <!-- 根据买家ID查询订单列表 -->
+    <select id="getByBuyerId" resultMap="OrderResultMap">
+        select id, seller_id, buyer_id, address_id, order_no, remark, amount, discount, status, pay_method, create_time, update_time
+        from `order`
+        where buyer_id = #{buyerId}
+        order by create_time desc
+    </select>
+
+    <!-- 根据卖家ID查询订单列表 -->
+    <select id="getBySellerId" resultMap="OrderResultMap">
+        select id, seller_id, buyer_id, address_id, order_no, remark, amount, discount, status, pay_method, create_time, update_time
+        from `order`
+        where seller_id = #{sellerId}
+        order by create_time desc
+    </select>
+
+    <!-- 根据状态查询订单列表 -->
+    <select id="getByStatus" resultMap="OrderResultMap">
+        select id, seller_id, buyer_id, address_id, order_no, remark, amount, discount, status, pay_method, create_time, update_time
+        from `order`
+        where status = #{status}
+        order by create_time desc
+    </select>
+
+</mapper>

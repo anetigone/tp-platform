@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: tp-platform
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.tp.common.entity
+
+logging:
+  level:
+    root: INFO
+    com.to: TRACE
+
+tp:
+  jwt:
+    # 密钥：必须足够长（至少32个字符），建议使用随机生成的Base64字符串
+    secret: MySuperSecretKeyWhichMustBeVeryLongAndSecure123456
+    # 过期时间：单位毫秒 (这里示例为 24小时)
+    expiration: 86400000
+    # Token头部的Key名称 (可选，用于拦截器)
+    header: Authorization

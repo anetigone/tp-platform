@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: tp-platform
+  profiles:
+    active: dev

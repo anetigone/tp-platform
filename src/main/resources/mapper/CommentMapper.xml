@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tp.mapper.CommentMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="CommentResultMap" type="com.tp.common.entity.Comment">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="order_id" property="orderId"/>
+        <result column="product_id" property="productId"/>
+        <result column="content" property="content"/>
+        <result column="star" property="star"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 新增评论 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into comment(user_id, order_id, product_id, content, star, create_time, update_time)
+        values (#{userId}, #{orderId}, #{productId}, #{content}, #{star}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 根据ID删除评论（物理删除） -->
+    <delete id="deleteById">
+        delete from comment
+        where id = #{id}
+    </delete>
+
+    <!-- 根据订单ID删除所有评论 -->
+    <delete id="deleteByOrderId">
+        delete from comment
+        where order_id = #{orderId}
+    </delete>
+
+    <!-- 条件更新评论（动态更新） -->
+    <update id="update">
+        update comment
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="orderId != null">
+                order_id = #{orderId},
+            </if>
+            <if test="productId != null">
+                product_id = #{productId},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="star != null">
+                star = #{star},
+            </if>
+            update_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据ID查询评论 -->
+    <select id="getById" resultMap="CommentResultMap">
+        select id, user_id, order_id, product_id, content, star, create_time, update_time
+        from comment
+        where id = #{id}
+    </select>
+
+    <!-- 多条件查询评论列表 -->
+    <select id="getList" resultMap="CommentResultMap">
+        select id, user_id, order_id, product_id, content, star, create_time, update_time
+        from comment
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId}
+            </if>
+            <if test="productId != null">
+                and product_id = #{productId}
+            </if>
+            <if test="content != null and content != ''">
+                and content like concat('%', #{content}, '%')
+            </if>
+            <if test="star != null">
+                and star = #{star}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!-- 根据ID批量查询评论 -->
+    <select id="getBatchIds" resultMap="CommentResultMap">
+        select id, user_id, order_id, product_id, content, star, create_time, update_time
+        from comment
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        order by create_time desc
+    </select>
+
+    <!-- 根据用户ID查询评论列表 -->
+    <select id="getByUserId" resultMap="CommentResultMap">
+        select id, user_id, order_id, product_id, content, star, create_time, update_time
+        from comment
+        where user_id = #{userId}
+        order by create_time desc
+    </select>
+
+    <!-- 根据订单ID查询评论列表 -->
+    <select id="getByOrderId" resultMap="CommentResultMap">
+        select id, user_id, order_id, product_id, content, star, create_time, update_time
+        from comment
+        where order_id = #{orderId}
+        order by create_time desc
+    </select>
+
+    <!-- 根据商品ID查询评论列表 -->
+    <select id="getByProductId" resultMap="CommentResultMap">
+        select id, user_id, order_id, product_id, content, star, create_time, update_time
+        from comment
+        where product_id = #{productId}
+        order by create_time desc
+    </select>
+
+    <!-- 根据商品ID和星级查询评论列表 -->
+    <select id="getByProductIdAndStar" resultMap="CommentResultMap">
+        select id, user_id, order_id, product_id, content, star, create_time, update_time
+        from comment
+        where product_id = #{productId}
+        and star = #{star}
+        order by create_time desc
+    </select>
+
+    <!-- 统计商品的平均星级 -->
+    <select id="getAverageStarByProductId" resultType="java.lang.Double">
+        select coalesce(avg(star), 0.0)
+        from comment
+        where product_id = #{productId}
+    </select>
+
+    <!-- 统计商品的评论总数 -->
+    <select id="countByProductId" resultType="java.lang.Integer">
+        select count(*)
+        from comment
+        where product_id = #{productId}
+    </select>
+
+    <!-- 根据星级统计商品评论数量 -->
+    <select id="countStarDistributionByProductId" resultType="java.util.Map">
+        select star as starValue, count(*) as count
+        from comment
+        where product_id = #{productId}
+        group by star
+        order by star desc
+    </select>
+
+    <!-- 检查用户是否已评论该订单的商品 -->
+    <select id="getByUserOrderProduct" resultMap="CommentResultMap">
+        select id, user_id, order_id, product_id, content, star, create_time, update_time
+        from comment
+        where user_id = #{userId}
+        and order_id = #{orderId}
+        and product_id = #{productId}
+        limit 1
+    </select>
+
+</mapper>
