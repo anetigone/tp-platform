@@ -1,5 +1,6 @@
 package com.tp.controller;
 
+import com.tp.common.context.UserType;
 import com.tp.common.dto.UserDTO;
 import com.tp.common.entity.User;
 import com.tp.common.result.Result;
@@ -15,6 +16,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -54,7 +58,7 @@ class UserControllerTest {
         when(userService.register(any(User.class))).thenReturn(true);
 
         // When & Then
-        mockMvc.perform(post("/api/user/register")
+        mockMvc.perform(post("/api/v1/user/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\":\"testuser\",\"password\":\"password123\",\"email\":\"test@example.com\"}"))
                 .andExpect(status().isOk())
@@ -73,11 +77,15 @@ class UserControllerTest {
         loginUser.setUsername("testuser");
         loginUser.setEmail("test@example.com");
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", loginUser.getId().toString());
+        map.put("role", UserType.USER);
+
         when(userService.login("testuser", "password123")).thenReturn(loginUser);
-        when(jwtUtil.generateToken("testuser")).thenReturn("test_token");
+        when(jwtUtil.generateToken("testuser", map)).thenReturn("test_token");
 
         // When & Then
-        mockMvc.perform(post("/api/user/login")
+        mockMvc.perform(post("/api/v1/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\":\"testuser\",\"password\":\"password123\"}"))
                 .andExpect(status().isOk())

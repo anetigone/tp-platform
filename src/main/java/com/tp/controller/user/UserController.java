@@ -71,6 +71,7 @@ public class UserController {
         map.put("role", UserType.USER);
 
         String token = jwtUtil.generateToken(loginUser.getUsername(), map);
+        log.info("Token：{}", token);
         LoginVO loginVO = LoginVO.builder()
                 .id(loginUser.getId())
                 .username(loginUser.getUsername())

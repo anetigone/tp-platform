@@ -60,7 +60,7 @@ public class JwtUtil {
     public String generateToken(String username, Map<String, Object> extraClaims) {
         return Jwts.builder()
                 .claims(extraClaims)           // 设置自定义载荷
-                .subject(username)             // 设置主题 (通常是用户名或ID)
+                .subject(username)             // 设置主题
                 .issuedAt(new Date())          // 签发时间
                 .expiration(new Date(System.currentTimeMillis() + expiration)) // 过期时间
                 .signWith(signingKey)          // 签名方式和密钥

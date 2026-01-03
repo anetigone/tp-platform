@@ -32,7 +32,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 注册JWT拦截器，拦截所有API请求
         registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/v1/user/login", "/api/v1/user/register", "/api/v1/admin/login")
-                .excludePathPatterns("api/**");
+                .excludePathPatterns("/api/v1/user/login", "/api/v1/user/register", "/api/v1/admin/login");
     }
 }
