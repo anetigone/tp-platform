@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tp.mapper.ProductMapper">
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into product(seller_id, category_id, address_id, name, description, price, quantity, creat_time, update_time)
-        values (#{sellerId}, #{categoryId}, #{addressId}, #{name}, #{description}, #{price}, #{quantity}, #{creatTime}, #{updateTime})
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tp.common.entity.Product">
+        insert into product(seller_id, category_id, address_id, name, description, price, quantity, condition, status, creat_time, update_time)
+        values (#{sellerId}, #{categoryId}, #{addressId}, #{name}, #{description}, #{price}, #{quantity}, #{condition}, #{status}, #{creatTime}, #{updateTime})
     </insert>
 
     <select id="getById" resultType="com.tp.common.entity.Product">
@@ -59,7 +59,64 @@
         from product
     </select>
 
-    <update id="update">
+
+    <select id="listByMap" resultType="com.tp.common.entity.Product">
+        select *
+        from product
+        where 1=1
+        <if test="keywords != null and keywords.size() > 0">
+            and (
+            <foreach collection="keywords" item="keyword" separator=" or ">
+                name like concat('%', #{keyword}, '%')
+            </foreach>
+            )
+        </if>
+        <if test="conditions != null and conditions.size() > 0">
+            and condition in
+            <foreach collection="conditions" item="condition" open="(" separator="," close=")">
+                #{condition}
+            </foreach>
+        </if>
+        <if test="categoryId != null">
+            and category_id = #{categoryId}
+        </if>
+        <if test="minPrice != null">
+            and price &gt;= #{minPrice}
+        </if>
+        <if test="maxPrice != null">
+            and price &lt;= #{maxPrice}
+        </if>
+    </select>
+
+    <select id="countByMap" resultType="java.lang.Long">
+        select count(*)
+        from product
+        where 1=1
+        <if test="keywords != null and keywords.size() > 0">
+            and (
+            <foreach collection="keywords" item="keyword" separator=" or ">
+                name like concat('%', #{keyword}, '%')
+            </foreach>
+            )
+        </if>
+        <if test="conditions != null and conditions.size() > 0">
+            and condition in
+            <foreach collection="conditions" item="condition" open="(" separator="," close=")">
+                #{condition}
+            </foreach>
+        </if>
+        <if test="categoryId != null">
+            and category_id = #{categoryId}
+        </if>
+        <if test="minPrice != null">
+            and price &gt;= #{minPrice}
+        </if>
+        <if test="maxPrice != null">
+            and price &lt;= #{maxPrice}
+        </if>
+    </select>
+
+    <update id="update" parameterType="com.tp.common.entity.Product">
         update product
         <set>
             <if test="sellerId != null">seller_id = #{sellerId},</if>
@@ -69,12 +126,14 @@
             <if test="description != null">description = #{description},</if>
             <if test="price != null">price = #{price},</if>
             <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="condition != null">condition = #{condition},</if>
+            <if test="status != null">status = #{status},</if>
             update_time = #{updateTime}
         </set>
         where id = #{id}
     </update>
 
-    <update id="updateQuantity">
+    <update id="updateQuantity" parameterType="com.tp.common.entity.Product">
         update product
         set quantity = #{quantity},
             update_time = now()

@@ -1,6 +1,7 @@
 package com.tp.controller;
 
 import com.tp.common.dto.ProductDTO;
+import com.tp.common.dto.ProductQueryDTO;
 import com.tp.common.entity.Product;
 import com.tp.common.entity.ProductImage;
 import com.tp.common.result.PageResult;
@@ -10,7 +11,9 @@ import com.tp.service.ProductService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/product")
@@ -51,15 +54,26 @@ public class ProductController {
 
     /**
      * 分页查询商品
-     * //todo 按条件查询
+     * @param dto 查询条件
      * @return 商品列表
      */
-    @GetMapping("/list")
-    public PageResult<Product> list(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                      @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        List<Product> products = productService.getPage(page, size);
-        Long total = productService.count();
-        return PageResult.success(products, total, page, size);
+    @PostMapping("/list")
+    public PageResult<Product> list(@RequestBody ProductQueryDTO dto) {
+        Integer page = dto.getPage();
+        Integer limit = dto.getSize();
+        Integer offset = (page - 1) * limit;
+        Map<String, Object> map = new HashMap<>();
+        map.put("offset", offset);
+        map.put("limit", limit);
+        map.put("keywords", dto.getKeywords());
+        map.put("conditions", dto.getConditions());
+        map.put("categoryId", dto.getCategoryId());
+        map.put("minPrice", dto.getMinPrice());
+        map.put("maxPrice", dto.getMaxPrice());
+        List<Product> products = productService.listByMap(map);
+        Long total = productService.countByMap(map);
+
+        return PageResult.success(products, total, page, limit);
     }
 
     /**

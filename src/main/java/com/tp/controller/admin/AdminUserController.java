@@ -11,11 +11,11 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/admin/user")
 @Slf4j
-public class UserController {
+public class AdminUserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public AdminUserController(UserService userService) {
         this.userService = userService;
     }
 

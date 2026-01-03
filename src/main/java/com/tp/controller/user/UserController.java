@@ -16,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("api/v1/user")
 @Slf4j
@@ -63,7 +66,11 @@ public class UserController {
                 .build();
         BaseContext.setUserContext(context);
 
-        String token = jwtUtil.generateToken(loginUser.getUsername());
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", loginUser.getId().toString());
+        map.put("role", UserType.USER);
+
+        String token = jwtUtil.generateToken(loginUser.getUsername(), map);
         LoginVO loginVO = LoginVO.builder()
                 .id(loginUser.getId())
                 .username(loginUser.getUsername())

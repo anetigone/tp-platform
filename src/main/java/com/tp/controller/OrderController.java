@@ -14,13 +14,11 @@ import java.util.List;
 @RequestMapping("/api/v1/order")
 public class OrderController {
     private final OrderService orderService;
-    private final OrderItemService orderItemService;
 
-    public OrderController(OrderService orderService, OrderItemService orderItemService) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
-        this.orderItemService = orderItemService;
     }
-
+    // todo 重写订单逻辑,两个接口，保留原有的购物车逻辑
     /**
      * 创建订单
      * @param dto 订单信息
@@ -58,9 +56,9 @@ public class OrderController {
     }
 
     /**
-     * 取消订单
+     * 支付订单
      * @param id 订单ID
-     * @return 取消结果
+     * @return 支付结果
      */
     @PostMapping("/pay")
     public Result<String> pay(@RequestParam("id") Long id, @RequestParam("payMethod") Integer payMethod) {

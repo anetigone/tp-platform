@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tp.mapper.CollectionMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tp.common.entity.Collects">
+        insert into "collects"(user_id, product_id, create_time, update_time)
+        values (#{userId}, #{productId}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="getById" resultType="com.tp.common.entity.Collects">
+        select *
+        from "collects"
+        where id = #{id}
+    </select>
+
+    <select id="getAll" resultType="com.tp.common.entity.Collects">
+        select *
+        from "collects"
+    </select>
+
+    <update id="update" parameterType="com.tp.common.entity.Collects">
+        update "collects"
+        <set>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from "collects"
+        where id = #{id}
+    </delete>
+
+    <select id="countByUserId" resultType="long">
+        select count(*)
+        from "collects"
+        where user_id = #{userId}
+    </select>
+
+    <select id="getByUserId" resultType="com.tp.common.entity.Collects">
+        select *
+        from "collects"
+        where user_id = #{userId}
+    </select>
+
+    <select id="getPageByUserId" resultType="com.tp.common.entity.Collects">
+        select *
+        from "collects"
+        where user_id = #{userId}
+        limit #{offset}, #{limit}
+    </select>
+</mapper>

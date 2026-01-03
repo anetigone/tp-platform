@@ -15,7 +15,7 @@
     </resultMap>
 
     <!-- 新增评论 -->
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tp.common.entity.Comment">
         insert into comment(user_id, order_id, product_id, content, star, create_time, update_time)
         values (#{userId}, #{orderId}, #{productId}, #{content}, #{star}, #{createTime}, #{updateTime})
     </insert>
@@ -33,7 +33,7 @@
     </delete>
 
     <!-- 条件更新评论（动态更新） -->
-    <update id="update">
+    <update id="update" parameterType="com.tp.common.entity.Comment">
         update comment
         <set>
             <if test="userId != null">

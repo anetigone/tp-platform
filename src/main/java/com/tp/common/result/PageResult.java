@@ -12,7 +12,7 @@ import java.util.List;
 public class PageResult<T> {
     private Integer code;
     private String msg;
-    private List<T> list;
+    private List<T> records;
     private Long total;
     private Integer pageNo;
     private Integer pageSize;
@@ -23,7 +23,7 @@ public class PageResult<T> {
         result.setCode(ResultCode.getSuccessCode());
         result.setMsg(ResultCode.getSuccessMsg());
 
-        result.setList(list);
+        result.setRecords(list);
         result.setTotal(total);
         result.setPageNo(pageNo);
         result.setPageSize(pageSize);

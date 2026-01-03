@@ -4,6 +4,7 @@ import com.tp.common.entity.Product;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ProductMapper {
@@ -30,4 +31,8 @@ public interface ProductMapper {
     Long countBySellerId(Long sellerId);
 
     Long count();
+
+    List<Product> listByMap(Map<String, Object> map);
+
+    Long countByMap(Map<String, Object> map);
 }

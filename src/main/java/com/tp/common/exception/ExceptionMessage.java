@@ -1,5 +1,6 @@
 package com.tp.common.exception;
 
+@SuppressWarnings("unused")
 public class ExceptionMessage {
     // User related exceptions
     public static final String USER_NOT_FOUND = "用户不存在";
@@ -64,4 +65,17 @@ public class ExceptionMessage {
     public static final String ADDRESS_ID_NULL = "地址ID不能为空";
     public static final String ADDRESS_USER_ID_NULL = "用户ID不能为空";
     public static final String NO_DEFAULT_ADDRESS = "不存在默认地址";
+
+    // Squat related exceptions
+    public static final String SQUAT_ID_NULL = "蹲蹲ID不能为空";
+    public static final String SQUAT_USER_ID_NULL = "用户ID或蹲蹲ID不能为空";
+    public static final String SQUAT_PRODUCT_ID_NULL = "商品ID不能为空";
+
+    // Message&Conversation related exceptions
+    public static final String MESSAGE_ID_NULL = "消息ID不能为空";
+    public static final String CONVERSATION_ID_NULL = "会话ID不能为空";
+    public static final String CONVERSATION_NOT_FOUND = "会话不存在";
+    public static final String CONVERSATION_SENDER_ID_NULL = "发送者ID不能为空";
+    public static final String NO_PERMISSION = "没有权限查看此对话";
+    public static final String CONVERSATION_USER_ID_NULL = "用户ID不能为空";
 }

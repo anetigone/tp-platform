@@ -35,6 +35,11 @@ public class JwtInterceptor implements HandlerInterceptor {
         // 从请求头中获取token
         String token = request.getHeader("Authorization");
 
+        // 如果是OPTIONS请求，直接放行
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // 如果没有token，则返回错误
         if (token == null || token.isEmpty()) {
             log.warn("Missing token in request from IP: {}", getClientIP(request));

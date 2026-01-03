@@ -19,7 +19,7 @@
     </resultMap>
 
     <!-- 新增订单 -->
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tp.common.entity.Order">
         insert into `order`(seller_id, buyer_id, address_id, order_no, remark, amount, discount, status, pay_method, create_time, update_time)
         values (#{sellerId}, #{buyerId}, #{addressId}, #{orderNo}, #{remark}, #{amount}, #{discount}, #{status}, #{payMethod}, #{createTime}, #{updateTime})
     </insert>
@@ -32,7 +32,7 @@
     </update>
 
     <!-- 条件更新订单（动态更新） -->
-    <update id="update">
+    <update id="update" parameterType="com.tp.common.entity.Order">
         update `order`
         <set>
             <if test="sellerId != null">
@@ -68,14 +68,14 @@
     </update>
 
     <!-- 更新订单状态 -->
-    <update id="updateStatus">
+    <update id="updateStatus" parameterType="com.tp.common.entity.Order">
         update `order`
         set status = #{status}, update_time = now()
         where id = #{id}
     </update>
 
     <!-- 更新支付方式 -->
-    <update id="updatePayMethod">
+    <update id="updatePayMethod" parameterType="com.tp.common.entity.Order">
         update `order`
         set pay_method = #{payMethod}, update_time = now()
         where id = #{id}

@@ -27,12 +27,12 @@
         where user_id = #{userId}
     </select>
     
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.tp.common.entity.Address">
         insert into address(user_id, province, city, street, detail, zip_code, is_default, status, create_time, update_time)
         values(#{userId}, #{province}, #{city}, #{street}, #{detail}, #{zipCode}, #{isDefault}, #{status}, #{createTime}, #{updateTime})
     </insert>
     
-    <update id="update">
+    <update id="update" parameterType="com.tp.common.entity.Address">
         update address
         <set>
             <if test="province != null">

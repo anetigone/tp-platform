@@ -3,17 +3,20 @@ package com.tp.service.impl;
 import com.tp.common.entity.Product;
 import com.tp.mapper.ProductMapper;
 import com.tp.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
-    private ProductMapper productMapper;
+    private final ProductMapper productMapper;
+
+    public ProductServiceImpl(ProductMapper productMapper) {
+        this.productMapper = productMapper;
+    }
 
     @Override
     public Long create(Product product) {
@@ -82,7 +85,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> listByMap(Map<String, Object> map) {
+        return productMapper.listByMap(map);
+    }
+
+    @Override
     public Long count() {
         return productMapper.count();
+    }
+
+    @Override
+    public Long countByMap(Map<String, Object> map) {
+        return productMapper.countByMap(map);
     }
 }

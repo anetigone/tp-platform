@@ -9,10 +9,9 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
-
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.tp.common.entity
+  h2:
+    console:
+      enabled: true
 
 logging:
   level:
@@ -27,3 +26,6 @@ tp:
     expiration: 86400000
     # Token头部的Key名称 (可选，用于拦截器)
     header: Authorization
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.tp.common.entity

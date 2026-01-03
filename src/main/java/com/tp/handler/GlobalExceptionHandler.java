@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLException;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -43,6 +45,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CommentException.class)
     public Result<String> handleCommentException(CommentException e) {
         log.error("评论异常 {}", e.getMessage());
+        return Result.error(e.getMessage());
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public Result<String> handleException(SQLException e) {
+        log.error("数据库异常 {}", e.getMessage());
         return Result.error(e.getMessage());
     }
 }

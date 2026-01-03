@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tp.mapper.ConversationMapper">
+
+    <select id="getByUserId" resultType="com.tp.common.entity.Conversation">
+        select *
+        from "conversation"
+        where sender_id = #{userId} or receiver_id = #{userId}
+    </select>
+
+    <select id="getById" resultType="com.tp.common.entity.Conversation">
+        select *
+        from "conversation"
+        where id = #{id}
+    </select>
+
+    <select id="getBySenderAndReceiver" resultType="com.tp.common.entity.Conversation">
+        select *
+        from "conversation"
+        where (sender_id = #{senderId} and receiver_id = #{receiverId}) or
+              (sender_id = #{receiverId} and receiver_id = #{senderId})
+    </select>
+
+    <insert id="insert" parameterType="com.tp.common.entity.Conversation" useGeneratedKeys="true" keyProperty="id">
+        insert into "conversation"(sender_id, receiver_id, last_message_id, sender_last_message_id,
+                                   receiver_last_message_id, sender_unread_count, receiver_unread_count, sender_deleted,
+                                   receiver_deleted, create_time, update_time)
+        values (#{senderId}, #{receiverId}, #{lastMessageId}, #{senderLastMessageId},
+                #{receiverLastMessageId}, #{senderUnreadCount}, #{receiverUnreadCount}, #{senderDeleted},
+                #{receiverDeleted}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.tp.common.entity.Conversation">
+        update "conversation"
+        <set>
+            <if test="lastMessageId != null">last_message_id = #{lastMessageId},</if>
+            <if test="senderLastMessageId != null">sender_last_message_id = #{senderLastMessageId},</if>
+            <if test="receiverLastMessageId != null">receiver_last_message_id = #{receiverLastMessageId},</if>
+            <if test="senderUnreadCount != null">sender_unread_count = #{senderUnreadCount},</if>
+            <if test="receiverUnreadCount != null">receiver_unread_count = #{receiverUnreadCount},</if>
+            <if test="senderDeleted != null">sender_deleted = #{senderDeleted},</if>
+            <if test="receiverDeleted != null">receiver_deleted = #{receiverDeleted},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from "conversation"
+        where id = #{id}
+    </delete>
+</mapper>

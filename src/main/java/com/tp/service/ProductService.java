@@ -3,6 +3,7 @@ package com.tp.service;
 import com.tp.common.entity.Product;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProductService {
     Long create(Product product);
@@ -28,4 +29,8 @@ public interface ProductService {
     List<Product> getPage(Integer page, Integer size);
 
     Long count();
+
+    List<Product> listByMap(Map<String, Object> map);
+
+    Long countByMap(Map<String, Object> map);
 }

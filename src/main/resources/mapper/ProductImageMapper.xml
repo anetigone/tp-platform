@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tp.mapper.ProductImageMapper">
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tp.common.entity.ProductImage">
         insert into product_image(product_id, url, name, description)
         values (#{productId}, #{url}, #{name}, #{description})
     </insert>
@@ -17,10 +17,9 @@
         select *
         from product_image
         where product_id = #{productId}
-        order by id asc
     </select>
 
-    <update id="update">
+    <update id="update" parameterType="com.tp.common.entity.ProductImage">
         update product_image
         <set>
             <if test="productId != null">product_id = #{productId},</if>
